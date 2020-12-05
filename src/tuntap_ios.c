@@ -19,17 +19,18 @@
 #include "n2n.h"
 
 #ifdef __APPLE__
-#ifndef __IOS_AVAILABLE
+#ifdef __IOS_AVAILABLE
+
 
 void tun_close(tuntap_dev *device);
 
 /* ********************************** */
 
 #define N2N_OSX_TAPDEVICE_SIZE 32
-int tuntap_open(tuntap_dev *device /* ignored */, 
-                char *dev, 
+int tuntap_open(tuntap_dev *device /* ignored */,
+                char *dev,
                 const char *address_mode, /* static or dhcp */
-                char *device_ip, 
+                char *device_ip,
                 char *device_mask,
                 const char * device_mac,
 		int mtu) {
@@ -45,7 +46,7 @@ int tuntap_open(tuntap_dev *device /* ignored */,
       break;
     }
   }
-  
+
   if(device->fd < 0) {
     traceEvent(TRACE_ERROR, "Unable to open any tap devices /dev/tap0 through /dev/tap254. Is this user properly authorized to access those descriptors?");
     traceEvent(TRACE_ERROR, "Please read https://github.com/ntop/n2n/blob/dev/doc/macOS.md");
@@ -63,12 +64,12 @@ int tuntap_open(tuntap_dev *device /* ignored */,
         /* Set the hw address before bringing the if up. */
         snprintf(buf, sizeof(buf), "ifconfig tap%d ether %s",
                  i, device_mac);
-        system(buf);
+//        system(buf);
     }
 
     snprintf(buf, sizeof(buf), "ifconfig tap%d %s netmask %s mtu %d up",
              i, device_ip, device_mask, mtu);
-    system(buf);
+//    system(buf);
 
     traceEvent(TRACE_NORMAL, "Interface tap%d up and running (%s/%s)",
                i, device_ip, device_mask);
@@ -88,7 +89,7 @@ int tuntap_open(tuntap_dev *device /* ignored */,
       buf[0] = 0;
       fgets(buf, sizeof(buf), fd);
       pclose(fd);
-      
+
       if(buf[0] == '\0') {
 	traceEvent(TRACE_ERROR, "Unable to read tap%d interface MAC address");
 	exit(0);
